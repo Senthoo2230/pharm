@@ -63,16 +63,24 @@
                             <th class="text-center"></th>
                           </thead>
                           <tbody>
-                            <tr>
-                              <td class="text-center">1</td>
-                              <td class="text-left">abc123</td>
-                              <td class="text-right">20.00</td>
-                              <td class="text-center">3</td>
-                              <td class="text-right">60.00</td>
-                              <td>
-                                <a href="" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>
-                              </td>
-                            </tr>
+                            <?php
+                            $i = 1;
+                            foreach ($order_items as $o_itm) {
+                              ?>
+                              <tr>
+                                <td class="text-center"><?php echo $i; ?></td>
+                                <td class="text-left"><?php echo $o_itm->item_name; ?></td>
+                                <td class="text-right"><?php echo $itm_amt =  $o_itm->amount; ?>.00</td>
+                                <td class="text-center"><?php echo $itm_qty = $o_itm->qty; ?></td>
+                                <td class="text-right"><?php echo $item_total = $itm_amt*$itm_qty; ?>.00</td>
+                                <td>
+                                  <a href="" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>
+                                </td>
+                              </tr>
+                              <?php
+                              $i++;
+                            }
+                            ?>
                           </tbody>
                         </table>
                       </div>

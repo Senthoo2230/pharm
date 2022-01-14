@@ -143,7 +143,7 @@ class Orders_model extends CI_Model
     }
 
     public function last_order_no(){
-        $sql = "SELECT order_no FROM order_item ORDER BY created DESC LIMIT 1";
+        $sql = "SELECT order_no FROM orders ORDER BY created DESC LIMIT 1";
         $query = $this->db->query($sql);
         $count = $query->num_rows();
 
@@ -541,6 +541,7 @@ class Orders_model extends CI_Model
 
     public function insert_order_item($item_id,$order_no,$p_id){
         $purchase_data = $this->purchase_data($p_id); //532
+        $item_data = $this->item_data($item_id);
         $item_name =$item_data->item_name;
         $price = $purchase_data->selling_price;
 
@@ -548,7 +549,6 @@ class Orders_model extends CI_Model
             'order_no' => $order_no,
             'item_id' => $item_id,
             'item_name' => $item_name,
-            'qty' => $qty,
             'amount' => $price,
             'purchase_id' => $p_id
         );
@@ -650,8 +650,9 @@ class Orders_model extends CI_Model
         $this->db->update('orders', $data);
     }
 
-    public function get_order_items($bill_no){
-        $sql = "SELECT * FROM order_item WHERE bill_no = $bill_no";
+    public function get_order_items(){
+        $order_no = $this->last_order_no()+1;
+        $sql = "SELECT * FROM order_item WHERE order_no = $order_no";
         $query = $this->db->query($sql);
         $result = $query->result();
         return $result;

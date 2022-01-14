@@ -168,9 +168,17 @@
     });
 
     $(document).ready(function(){
-        var bill_no = $("#bill_no").val();
-          $.ajax({
-            url:"<?php echo base_url(); ?>Orders/Add_Service", //495
+        
+    }); 
+
+    // Price for Service
+    $(document).ready(function(){
+      $("#add_order_item").click(function(){
+        var order_no = $("#order_no").val();
+        var p_id = $("#p_id").val();
+        alert(p_id)
+          /*$.ajax({
+            url:"<?php echo base_url(); ?>Orders/insert_order_item", //803
             type:"POST",
             cache:false,
             data:{bill_no:bill_no},
@@ -180,36 +188,7 @@
               $('#service').val("");
               $('#submit_btn').show();
             }
-          });
-        
-    }); 
-
-    // Price for Service
-    $(document).ready(function(){
-      $("#add_item").click(function(){
-        var p_id = $("#items").val();
-        var qty = $("#qty").val();
-        var bill_no = $("#bill_no").val();
-
-        if (p_id == "" || qty == "") {
-          $("#item_error").html("Please Select a item and Quantity");
-        }
-        
-        else{
-          $("#item_error").html("");
-          $.ajax({
-            url:"<?php echo base_url(); ?>Orders/Add_item", //565
-            type:"POST",
-            cache:false,
-            data:{p_id:p_id,bill_no:bill_no,qty:qty},
-            success:function(data){
-              //alert(data);
-              $("#item_tbl").html(data);
-              $('#items').val("");
-              $('#submit_btn').show();
-            }
-        });
-      }
+          });*/
       }); 
     });
 

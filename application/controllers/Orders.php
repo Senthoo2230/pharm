@@ -207,9 +207,11 @@ class Orders extends CI_Controller {
 
         $data['items'] = $this->Orders_model->purchase_items();
 
-        //Bill Number
+        //order Number
         $data['order_no'] = $this->Orders_model->last_order_no()+1; //129
-
+        //Order_items
+        $data['order_items'] = $this->Orders_model->get_order_items();
+        
         $data['pending_count'] = $this->Dashboard_model->pending_count();
         $data['confirm_count'] = $this->Dashboard_model->confirm_count();
 
@@ -811,6 +813,8 @@ class Orders extends CI_Controller {
         // Insert into order_items
         $this->Orders_model->insert_order_item($item_id,$order_no,$p_id);
 
+        // Redirect to Add Order
+        redirect('/Orders/insert');
     }
 
 }
