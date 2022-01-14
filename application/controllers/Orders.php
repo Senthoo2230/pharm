@@ -811,8 +811,16 @@ class Orders extends CI_Controller {
         $item_id = $purchase_data->item_id;
 
         // Insert into order_items
-        $this->Orders_model->insert_order_item($item_id,$order_no,$p_id);
+        $this->Orders_model->insert_order_item($item_id,$order_no,$p_id); //542
 
+        // Redirect to Add Order
+        redirect('/Orders/insert');
+    }
+
+    public function delete_order_item(){
+        $item_id =  $this->uri->segment('3');
+        $order_no =  $this->uri->segment('4');
+        $this->Orders_model->delete_order_item($item_id,$order_no); //804
         // Redirect to Add Order
         redirect('/Orders/insert');
     }

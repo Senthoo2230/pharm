@@ -545,14 +545,28 @@ class Orders_model extends CI_Model
         $item_name =$item_data->item_name;
         $price = $purchase_data->selling_price;
 
-        $data = array(
-            'order_no' => $order_no,
-            'item_id' => $item_id,
-            'item_name' => $item_name,
-            'amount' => $price,
-            'purchase_id' => $p_id
-        );
-        $this->db->insert('order_item', $data);
+        //same item click
+        if ($this->order_item_available($item_id,$order_no) > 0) {
+            //update quantity by 1
+            $sql = "UPDATE order_item set qty = qty + 1 WHERE item_id = '$item_id' AND order_no = $order_no";
+            $query = $this->db->query($sql);
+        }
+        else{
+            $data = array(
+                'order_no' => $order_no,
+                'item_id' => $item_id,
+                'item_name' => $item_name,
+                'amount' => $price,
+                'purchase_id' => $p_id
+            );
+            $this->db->insert('order_item', $data);
+        }
+    }
+
+    public function order_item_available($item_id,$order_no){
+        $sql = "SELECT * FROM order_item WHERE order_no = $order_no AND item_id = '$item_id'";
+        $query = $this->db->query($sql);
+        return $query->num_rows();
     }
 
     public function check_qunatity($item_id){
@@ -604,12 +618,6 @@ class Orders_model extends CI_Model
     //Check  service for order validation
     public function order_service_available($service_id,$bill_no){
         $sql = "SELECT id FROM order_service WHERE bill_no = $bill_no AND service_id = $service_id";
-        $query = $this->db->query($sql);
-        return $query->num_rows();
-    }
-
-    public function order_item_available($item_id,$bill_no){
-        $sql = "SELECT * FROM order_item WHERE bill_no = $bill_no AND item_id = '$item_id'";
         $query = $this->db->query($sql);
         return $query->num_rows();
     }
@@ -791,6 +799,11 @@ class Orders_model extends CI_Model
         $query = $this->db->query($sql);
         $result = $query->result();
         return $result;
+    }
+
+    public function delete_order_item($item_id,$order_no){
+        $sql = "DELETE FROM order_item WHERE order_no = $order_no AND item_id = '$item_id'";
+        $query = $this->db->query($sql);
     }
 
 }

@@ -47,7 +47,6 @@
         <h3>Add New Order</h3>
         <div class="row mt">
           <div class="col-lg-12">
-            <form action="<?php echo base_url(); //300?>Orders/validation" method="post" enctype="multipart/form-data">
             <div class="form-panel">
               <div class="row">
                 <div class="col-md-4">
@@ -65,6 +64,7 @@
                           <tbody>
                             <?php
                             $i = 1;
+                            $sub_total = 0;
                             foreach ($order_items as $o_itm) {
                               ?>
                               <tr>
@@ -74,10 +74,11 @@
                                 <td class="text-center"><?php echo $itm_qty = $o_itm->qty; ?></td>
                                 <td class="text-right"><?php echo $item_total = $itm_amt*$itm_qty; ?>.00</td>
                                 <td>
-                                  <a href="" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>
+                                  <a href="<?php echo base_url(); ?>Orders/delete_order_item/<?php echo $o_itm->item_id; ?>/<?php echo $order_no; ?>" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>
                                 </td>
                               </tr>
                               <?php
+                              $sub_total = $sub_total+$item_total;
                               $i++;
                             }
                             ?>
@@ -101,13 +102,13 @@
                       </div>
                       <div class="col-md-6 text-right">
                         <div class="item_m">
-                          15,000.00
+                          <?php echo $sub_total; ?>.00
                         </div>
                         <div class="item_m">
-                          500.00
+                        <?php echo $discount = 0; ?>.00
                         </div>
                         <div class="item_m">
-                          14,500.00
+                        <?php echo $sub_total-$discount; ?>.00
                         </div>
                       </div>
                     </div>
