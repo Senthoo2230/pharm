@@ -1,19 +1,9 @@
 
 <style type="text/css">
-  .li-style{
-    border-bottom: medium;
-    background-color:#f4f9f9;
-    padding: 8px;
-    color: #314e52;
-  }
-  .li-style:hover{
-    background-color:#e7e6e1;
-    color: #f2a154;
-  }
   .add_items{
     width:100%;
     height:380px;
-    background-color: #c4dbff;
+    background-color: #CFFFDC;
     padding:10px;
   }
   .btn_item{
@@ -22,8 +12,12 @@
   .item_box{
     margin-top:20px;
     padding:20px 10px;
-    background-color: #c4dbff;
+    background-color: #CFFFDC;
     height:150px;
+    border-radius: 18px;
+    -webkit-box-shadow: 0 10px 6px -6px #777;
+     -moz-box-shadow: 0 10px 6px -6px #777;
+          box-shadow: 0 10px 6px -6px #777;
   }
   .item_m{
     padding:5px 0px;
@@ -63,6 +57,7 @@
                           </thead>
                           <tbody>
                             <?php
+                            $CI =& get_instance();
                             $i = 1;
                             $sub_total = 0;
                             foreach ($order_items as $o_itm) {
@@ -74,13 +69,15 @@
                                 <td class="text-center"><?php echo $itm_qty = $o_itm->qty; ?></td>
                                 <td class="text-right"><?php echo $item_total = $itm_amt*$itm_qty; ?>.00</td>
                                 <td>
-                                  <a href="<?php echo base_url(); ?>Orders/delete_order_item/<?php echo $o_itm->item_id; ?>/<?php echo $order_no; ?>" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>
+                                  <a href="<?php echo base_url(); ?>Orders/delete_order_item/<?php echo $o_itm->id; ?>" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></a>
                                 </td>
                               </tr>
                               <?php
                               $sub_total = $sub_total+$item_total;
                               $i++;
                             }
+                            // update total in order tbl
+                            $CI->Orders_model->update_total($order_id,$sub_total);
                             ?>
                           </tbody>
                         </table>
@@ -105,7 +102,10 @@
                           <?php echo $sub_total; ?>.00
                         </div>
                         <div class="item_m">
-                        <?php echo $discount = 0; ?>.00
+                        <?php
+                        // Discount from order
+                        echo $discount = $CI->Orders_model->order_discount($order_id); //83
+                        ?>.00
                         </div>
                         <div class="item_m">
                         <?php echo $sub_total-$discount; ?>.00
@@ -117,17 +117,53 @@
                   <div style="margin-top:10px;">
                     <div class="row fnt-15 fnt-bold">
                       <div class="col-xs-3 col-md-6 col-lg-3">
-                        <a class="btn btn-primary btn-wt-100" href="">Clear</a>
+                        <a class="btn btn-primary btn-wt-100" href="<?php echo base_url(); ?>Orders/clear_items/<?php echo $order_id; ?>">Clear</a>
                       </div>
                       <div class="col-xs-3 col-md-6 col-lg-3">
-                        <a class="btn btn-primary btn-wt-100" href="">Discount</a>
+                        <button type="button" class="btn btn-primary btn-wt-100" data-toggle="modal" data-target="#discount">Discount</button>
                       </div>
                       <div class="col-xs-3 col-md-6 col-lg-3">
-                        <a class="btn btn-primary btn-wt-100" href="">Hold</a>
+                        <a class="btn btn-primary btn-wt-100" href="<?php echo base_url(); ?>Orders/hold_order/<?php echo $order_id; ?>">Hold</a>
                       </div>
                       <div class="col-xs-3 col-md-6 col-lg-3">
                         <a class="btn btn-primary btn-wt-100" href="">Pay</a>
                       </div>
+                    </div>
+                  </div>
+
+                  <!-- Modal -->
+                  <div id="discount" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+
+                      <!-- Modal content-->
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          <h4 class="modal-title">Add Discount</h4>
+                        </div>
+                        <form action="<?php echo base_url(); ?>Orders/add_discount" method="post">
+                        <div class="modal-body">
+                          <input type="text" value="<?php echo $order_id; ?>" name="order_id" hidden>
+                          <div class="row">
+                            <div class="col-sm-8">
+                              <input type="text" name="discount" class="form-control">
+                            </div>
+                            <div class="col-sm-4">
+                              <select name="discount_type" class="form-control">
+                                <option value="1">Amount</option>
+                                <option value="2">Percentage</option>
+                              </select>
+                            </div>
+                          </div>
+                          
+                        </div>
+                        <div class="modal-footer">
+                          <input type="submit" class="btn btn-success" value="Add">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          </form>
+                        </div>
+                      </div>
+
                     </div>
                   </div>
 
@@ -147,11 +183,10 @@
                   <div class="row" id="items">
                     
                       <?php
-                      $CI =& get_instance();
                       foreach ($items as $itm) {
                         $p_id = $itm->id;
                         ?>
-                        <a href="<?php echo base_url(); ?>Orders/insert_order_item/<?php echo $p_id; ?>/<?php echo $order_no; ?>">
+                        <a href="<?php echo base_url(); ?>Orders/insert_order_item/<?php echo $p_id; ?>/<?php echo $order_id; ?>">
                           <div class="col-lg-3 col-md-6 col-sm-12">
                             <div class="item_box">
                               <div class="item_m">

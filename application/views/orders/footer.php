@@ -54,7 +54,7 @@
       $("#search_item").on("keyup", function(){
         var search_text = $(this).val();
           $.ajax({
-            url:"<?php echo base_url(); ?>Orders/item_search",
+            url:"<?php echo base_url(); ?>Orders/item_search", //756
             type:"POST",
             cache:false,
             data:{search_text:search_text},

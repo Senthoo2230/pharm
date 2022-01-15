@@ -39,179 +39,24 @@ class Orders extends CI_Controller {
         $this->load->view('orders/footer');
     }
 
-    public function All()
-    {
-        $data['page_title'] = 'Orders';
-        $data['username'] = $this->Dashboard_model->username();
-
-        $data['bill_years'] = $this->Orders_model->get_bill_years();
-
-        $order_year =  $this->uri->segment('3');
-
-        $data['orders'] = $this->Orders_model->allorders($order_year);
-
-        $data['selected_yr'] = $order_year;
-
-        $data['pending_count'] = $this->Dashboard_model->pending_count();
-        $data['confirm_count'] = $this->Dashboard_model->confirm_count();
-
-        $data['nav'] = "Orders";
-        $data['subnav'] = "Orders";
-
-        $this->load->view('dashboard/layout/header',$data);
-        $this->load->view('dashboard/layout/aside',$data);
-        //$this->load->view('aside',$data);
-        $this->load->view('orders/allorders',$data);
-        $this->load->view('orders/footer');
-        
-    }
-
-    /*public function Print(){
-
-        //Insert to Bill
-        $orderid =  $this->uri->segment('3');
-        $bill_order = $this->Orders_model->bill_order($orderid);
-
-        $vehicle_no = $bill_order->vehicle_no;
-        $bill_no = $bill_order->bill_no;
-        $bill_date = $bill_order->bill_date;
-        $price = $bill_order->price;
-        $discount = $bill_order->discount;
-        $service = $bill_order->service;
-        $service_type = 1; // Service
-        $quantity = null;
-
-        if ($this->Orders_model->is_bill_available($orderid) == false) {
-            $this->Orders_model->insert_bill($orderid,$bill_no,$bill_date,$vehicle_no,$service,$service_type,$quantity,$price,$discount);
-        }
-
-
-        $data['bill_orders'] = $this->Orders_model->bill_order($orderid);
-
-        $data['bill_items'] = $this->Orders_model->bill_items($orderid);
-
-        $data['page_title'] = 'Bill';
-        $data['username'] = $this->Dashboard_model->username();
-        $data['pending_count'] = $this->Dashboard_model->pending_count();
-        $data['confirm_count'] = $this->Dashboard_model->confirm_count();
-
-        $this->load->view('dashboard/layout/header',$data);
-        //$this->load->view('aside',$data);
-        $this->load->view('orders/print',$data);
-        $this->load->view('orders/footer');
-    }*/
-
-    public function confirm_bill(){
-
-        $order_id =  $this->uri->segment('3');
-        //Bill status update to 1
-        $this->Orders_model->update_bill_status($order_id);
-
-        $data['bill_items'] = $this->Orders_model->bill_items($order_id);
-
-        $data['page_title'] = 'Print';
-        $data['order_id'] = $order_id;
-        $data['username'] = $this->Dashboard_model->username();
-        $data['pending_count'] = $this->Dashboard_model->pending_count();
-        $data['confirm_count'] = $this->Dashboard_model->confirm_count();
-        $data['basic'] = $this->Orders_model->order_bill_details($order_id);
-
-        $this->load->view('orders/print_bill',$data);
-    }
-
-    public function cancel_bill(){
-        //Insert to Bill
-        $order_id =  $this->uri->segment('3');
-
-        $this->Orders_model->delete_bill_item($order_id);
-
-        // Redirect to Print
-        redirect('Orders');
-    }
-
-    public function add_bill_item(){
-
-        $order_id = $this->input->post('order_id');
-
-        $this->form_validation->set_rules('price', 'Price', 'numeric');
-        $this->form_validation->set_rules('qty', 'Quantity', 'numeric');
-
-        if ($this->form_validation->run() == FALSE) {
-            // Redirect to Print
-            redirect('Orders/Print/'.$order_id);
-        }
-        else{
-            $item = $this->input->post('item');
-            $price = $this->input->post('price');
-            $qty = $this->input->post('qty');
-
-            $this->Orders_model->insert_bill_item($order_id,$item,$price,$qty);
-
-            // Redirect to Print
-            redirect('Orders/Print/'.$order_id);
-        }
-    }
-
-    public function delete(){
-        $order_id =  $this->uri->segment('3');
-        $bill_no =  $this->uri->segment('4');
-
-        $service = $this->Orders_model->get_service($order_id);
-
-        if ($service == 'Full Service' OR  $service == 'Oil Change') {
-            //Re Update Stocks
-            $fservice = $this->Orders_model->fullservice($order_id);
-            $oil_used = $fservice->oil_used;
-            $ofname = $fservice->ofname;
-            $afname = $fservice->afname;
-            $cfname = $fservice->cfname;
-
-            // Update Stocks
-            if ($oil_used != "") {
-                $this->Orders_model->reupdate_int($oil_used);
-            }
-            // Update Stocks
-            if ($ofname != "") {
-                $this->Orders_model->reupdate_int($ofname);
-            }
-            // Update Stocks
-            if ($afname != "") {
-                $this->Orders_model->reupdate_int($afname);
-            }
-            // Update Stocks
-            if ($cfname != "") {
-                $this->Orders_model->reupdate_int($cfname);
-            }
-
-            // Delete From Full Service
-            
-            $this->Orders_model->delete_fullservice($order_id);
-        }
-
-        $this->Orders_model->delete_order($order_id);
-
-        $this->session->set_flashdata('delete',"<div class='alert alert-danger'>Bill No-".$bill_no." is deleted!</div>");
-        // Redirect to Orders
-        redirect('/Orders');
-    }
-
-
     public function insert(){
 
         $data['page_title'] = 'Add Order';
         $data['nav'] = 'Orders';
 
         $data['username'] = $this->Dashboard_model->username();
-        $data['vehicle_types'] = $this->Orders_model->vehicle_types();
-        $data['vehicle_makes'] = $this->Orders_model->vehicle_makes();
 
         $data['items'] = $this->Orders_model->purchase_items();
 
-        //order Number
-        $data['order_no'] = $this->Orders_model->last_order_no()+1; //129
-        //Order_items
-        $data['order_items'] = $this->Orders_model->get_order_items();
-        
+        //create a order
+        $this->Orders_model->create_order(); //20
+
+        // Order items
+        $data['order_items'] = $this->Orders_model->order_items(); //36
+
+        //current order id
+        $data['order_id'] = $this->Orders_model->last_order_id();
+
         $data['pending_count'] = $this->Dashboard_model->pending_count();
         $data['confirm_count'] = $this->Dashboard_model->confirm_count();
 
@@ -223,6 +68,51 @@ class Orders extends CI_Controller {
         //$this->load->view('aside',$data);
         $this->load->view('orders/add-order',$data);
         $this->load->view('orders/footer');
+    }
+
+    public function insert_order_item(){
+        $p_id =  $this->uri->segment('3');
+        $order_id =  $this->uri->segment('4');
+
+        //Get item id from purchase_items table
+        $purchase_data = $this->Orders_model->purchase_data($p_id);
+        $item_id = $purchase_data->item_id;
+
+        // Insert into order_items
+        $order_item_insert = $this->Orders_model->insert_order_item($item_id,$order_id,$p_id);//50
+
+        // Redirect to Add Order
+        redirect('/Orders/insert');
+    }
+
+    public function delete_order_item(){
+        $id =  $this->uri->segment('3');
+        $this->Orders_model->delete_order_item($id); //90
+        // Redirect to Add Order
+        redirect('/Orders/insert');
+    }
+
+    public function clear_items(){
+        $order_id =  $this->uri->segment('3');
+        $this->Orders_model->clear_items($order_id);
+        // Redirect to Add Order //95
+        redirect('/Orders/insert');
+    }
+
+    public function add_discount(){
+        $order_id =  $this->input->post('order_id');
+        $discount =  $this->input->post('discount');
+        $type =  $this->input->post('discount_type');
+        $this->Orders_model->add_discount($order_id,$discount,$type); //107
+        // Redirect to Add Order
+        redirect('/Orders/insert');
+    }
+
+    public function hold_order(){
+        $order_id =  $this->uri->segment('3');
+        $this->Orders_model->hold_order($order_id); //124
+        // Redirect to Add Order //95
+        redirect('/Orders/insert');
     }
 
     public function edit(){
@@ -757,11 +647,14 @@ class Orders extends CI_Controller {
 
         if ($this->input->post('search_text')) {
             $search_text = $this->input->post('search_text');
+            $order_no = $this->Orders_model->last_order_no()+1;
             if ($search_text == "") {
                 $items = $this->Orders_model->purchase_items();
                 foreach ($items as $row)
                 {
+                    $p_id = $row->id;
                         ?>
+                        <a href="<?php echo base_url(); ?>Orders/insert_order_item/<?php echo $p_id; ?>/<?php echo $order_no; ?>">
                             <div class="col-lg-3 col-md-6 col-sm-12">
                                 <div class="item_box">
                                     <div class="item_m">
@@ -775,6 +668,7 @@ class Orders extends CI_Controller {
                                     </div>
                                 </div>
                             </div>
+                        </a>
                         <?php
                 }
             }
@@ -782,48 +676,29 @@ class Orders extends CI_Controller {
                 $result = $this->Orders_model->search_items($search_text);
                 foreach ($result as $row)
                 {
+                    $p_id = $row->id;
                         ?>
-                            <div class="col-lg-3 col-md-6 col-sm-12">
-                            <div class="item_box">
-                                <div class="item_m">
-                                <?php echo $item_id = $row->item_id; ?>
+                            <a href="<?php echo base_url(); ?>Orders/insert_order_item/<?php echo $p_id; ?>/<?php echo $order_no; ?>">
+                                <div class="col-lg-3 col-md-6 col-sm-12">
+                                    <div class="item_box">
+                                        <div class="item_m">
+                                        <?php echo $item_id = $row->item_id; ?>
+                                        </div>
+                                        <div class="item_m">
+                                        <?php echo $this->Orders_model->item_name($item_id); ?>
+                                        </div>
+                                        <div class="item_m">
+                                        Qty : <?php echo $item_id = $row->quantity; ?>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="item_m">
-                                <?php echo $this->Orders_model->item_name($item_id); ?>
-                                </div>
-                                <div class="item_m">
-                                Qty : <?php echo $item_id = $row->quantity; ?>
-                                </div>
-                            </div>
-                            </div>
+                            </a>
                         <?php
                 }
             }
         }
     }
 
-    public function insert_order_item(){
-        $p_id =  $this->uri->segment('3');
-        $order_no =  $this->uri->segment('4');
-
-        //Get item id from purchase_items table
-        $purchase_data = $this->Orders_model->purchase_data($p_id);
-        $item_id = $purchase_data->item_id;
-
-        // Insert into order_items
-        $this->Orders_model->insert_order_item($item_id,$order_no,$p_id); //542
-
-        // Redirect to Add Order
-        redirect('/Orders/insert');
-    }
-
-    public function delete_order_item(){
-        $item_id =  $this->uri->segment('3');
-        $order_no =  $this->uri->segment('4');
-        $this->Orders_model->delete_order_item($item_id,$order_no); //804
-        // Redirect to Add Order
-        redirect('/Orders/insert');
-    }
 
 }
 

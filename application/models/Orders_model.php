@@ -4,111 +4,133 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         
 class Orders_model extends CI_Model 
 {
-    public function orders()
-    {
-        
-        $sql = "SELECT * FROM orders WHERE MONTH(bill_date) = MONTH(CURRENT_DATE()) AND YEAR(bill_date) = YEAR(CURRENT_DATE()) ORDER BY created DESC";
+    public function order_available(){
+        $sql = "SELECT id FROM orders WHERE status = 0";
         $query = $this->db->query($sql);
-        $result = $query->result();
+        $count = $query->num_rows();
 
-        return $result;
-    }
-
-    public function allorders($order_year)
-    {
-        if ($order_year == "") {
-            $sql = "SELECT * FROM orders ORDER BY created DESC";
-        }
-        elseif ($order_year == "Now") {
-            $sql = "SELECT * FROM orders WHERE MONTH(bill_date) = MONTH(CURRENT_DATE()) AND YEAR(bill_date) = YEAR(CURRENT_DATE()) ORDER BY created DESC";
+        if ($count > 0) {
+            return true;
         }
         else{
-            $sql = "SELECT * FROM orders WHERE YEAR(bill_date) = $order_year ORDER BY created DESC";
+            return false;
         }
+    }
+
+    public function create_order(){
+        if ($this->order_available() == false) { //23
+            $data = array(
+                'status' => 0
+            );
+            $this->db->insert('orders', $data);
+        }
+    }
+
+    public function last_order_id(){
+        $sql = "SELECT id FROM orders WHERE status = 0 ORDER BY created DESC LIMIT 1";
+        $query = $this->db->query($sql);
+        $row = $query->first_row();
+        return $row->id;
+    }
+
+    public function order_items(){
+        $id = $this->last_order_id(); // 29
+        $sql = "SELECT * FROM order_item WHERE order_id = $id";
+        $query = $this->db->query($sql);
+        $result = $query->result();
+        return $result;
+    }
+
+    public function order_item_available($item_id,$order_id){
+        $sql = "SELECT * FROM order_item WHERE order_id = $order_id AND item_id = '$item_id'";
+        $query = $this->db->query($sql);
+        return $query->num_rows();
+    }
+
+    public function insert_order_item($item_id,$order_id,$p_id){
+        $purchase_data = $this->purchase_data($p_id); //532
+        $item_data = $this->item_data($item_id);
+        $item_name =$item_data->item_name;
+        $price = $purchase_data->selling_price;
+
+        //same item click
+        if ($this->order_item_available($item_id,$order_id) > 0) { //44
+            //update quantity by 1
+            $sql = "UPDATE order_item set qty = qty + 1 WHERE item_id = '$item_id' AND order_id = $order_id";
+            $query = $this->db->query($sql);
+        }
+        else{
+            $data = array(
+                'order_id' => $order_id,
+                'item_id' => $item_id,
+                'item_name' => $item_name,
+                'amount' => $price,
+                'purchase_id' => $p_id
+            );
+            $this->db->insert('order_item', $data);
+        }
+    }
+
+    public function update_total($order_id,$total){
+        $data = array(
+            'total' => $total
+        );
         
-        $query = $this->db->query($sql);
-        $result = $query->result();
-
-        return $result;
+        $this->db->where('id', $order_id);
+        $this->db->update('orders', $data);
     }
+
+    public function order_discount($order_id){
+        $sql = "SELECT * FROM orders WHERE id = $order_id LIMIT 1";
+        $query = $this->db->query($sql);
+        $row = $query->first_row();
+        return $row->discount;
+    }
+
+    public function delete_order_item($id){
+        $sql = "DELETE FROM order_item WHERE id = $id";
+        $query = $this->db->query($sql);
+    }
+
+    public function clear_items($order_id){
+        $sql = "DELETE FROM order_item WHERE order_id = $order_id";
+        $query = $this->db->query($sql);
+    }
+
+    public function order_total($order_id){
+        $sql = "SELECT * FROM orders WHERE id = $order_id LIMIT 1";
+        $query = $this->db->query($sql);
+        $row = $query->first_row();
+        return $row->total;
+    }
+
+    public function add_discount($order_id,$discount,$type){
+
+        if ($type == 1) { //amount
+            $dis = $discount;
+        }
+        if ($type == 2) { //%
+            $dis = $this->order_total($order_id)*$discount/100;
+        }
+
+        $data = array(
+            'discount' => $dis
+        );
+        
+        $this->db->where('id', $order_id);
+        $this->db->update('orders', $data);
+    }
+
+    public function hold_order($order_id){
+        $data = array(
+            'status' => 2
+        );
+        
+        $this->db->where('id', $order_id);
+        $this->db->update('orders', $data);
+    }
+
     
-    public function delete_order($id)
-    {
-        $sql = "DELETE FROM orders WHERE order_id=$id";
-        $query = $this->db->query($sql);
-    } 
-
-    public function vehicle_list($vehicle_no){
-        $sql = "SELECT * FROM vehicles WHERE vehicle_no LIKE '%$vehicle_no%'";
-        $query = $this->db->query($sql);
-        $result = $query->result();
-
-        return $result;
-    }
-
-    public function get_contact_no($v_no){
-        $sql = "SELECT * FROM vehicles WHERE vehicle_no = '$v_no'";
-        $query = $this->db->query($sql);
-        $row = $query->first_row();
-
-        return $row->contact_no;
-    }
-
-    public function get_customername($v_no){
-        $sql = "SELECT * FROM vehicles WHERE vehicle_no = '$v_no'";
-        $query = $this->db->query($sql);
-        $row = $query->first_row();
-
-        return $row->customername;
-    }
-
-    public function vehicle_types(){
-        $sql = "SELECT * FROM type ORDER BY type ASC";
-        $query = $this->db->query($sql);
-        $result = $query->result();
-
-        return $result;
-    }
-
-    public function vehicle_makes(){
-        $sql = "SELECT * FROM make ORDER BY make ASC";
-        $query = $this->db->query($sql);
-        $result = $query->result();
-
-        return $result;
-    }
-
-    public function services(){
-        $sql = "SELECT * FROM service";
-        $query = $this->db->query($sql);
-        $result = $query->result();
-        return $result;
-    }
-
-    public function get_int_item($catogery){
-        $sql = "SELECT * FROM int_items WHERE item_catogery = $catogery ORDER BY item_name ASC";
-        $query = $this->db->query($sql);
-        $result = $query->result();
-
-        return $result;
-    }
-
-    public function get_cabin(){
-        $sql = "SELECT * FROM int_items WHERE item_catogery = 5 ORDER BY item_name ASC";
-        $query = $this->db->query($sql);
-        $result = $query->result();
-
-        return $result;
-    }
-
-    public function bays(){
-        $sql = "SELECT bay_name FROM bay ORDER BY bay_name ASC";
-        $query = $this->db->query($sql);
-        $result = $query->result();
-
-        return $result;
-    }
-
     public function insert_order($vehicle_no,$cus_name,$contact_no,$bill_no,$bill_date,$type,$make,$bay,$discount,$reminder,$ckm,$nkm){
         $sql = "INSERT INTO orders
         (vehicle_no,customer_name,contact_no,bill_no,bill_date,type,make,bay,discount,reminder,ckm,nkm)
@@ -126,21 +148,6 @@ class Orders_model extends CI_Model
         return $conut;
     }
 
-    public function last_bill(){
-        $sql = "SELECT bill_no FROM orders ORDER BY created DESC LIMIT 1";
-        $query = $this->db->query($sql);
-        $count = $query->num_rows();
-
-        if ($count == 0) {
-            //First bill number
-            return 999;
-        }
-        else{
-            //last bill number
-            $row = $query->first_row();
-            return $row->bill_no;
-        }
-    }
 
     public function last_order_no(){
         $sql = "SELECT order_no FROM orders ORDER BY created DESC LIMIT 1";
@@ -186,14 +193,6 @@ class Orders_model extends CI_Model
     public function update_contact_no($vehicle_no, $contact_no,$cus_name){
         $sql = "UPDATE vehicles SET contact_no = $contact_no, customername = '$cus_name' WHERE vehicle_no = '$vehicle_no'";
         $query = $this->db->query($sql);
-    }
-
-    public function last_order_id(){
-        $sql = "SELECT order_id FROM orders ORDER BY created DESC LIMIT 1";
-        $query = $this->db->query($sql);
-        $row = $query->first_row();
-
-        return $row->order_id;
     }
 
     public function insert_full_service($order_id,$oil_used,$oil_filter,$ofname,$air_filter,$afname,$c_filter,$cfname){
@@ -539,35 +538,9 @@ class Orders_model extends CI_Model
         return $row;
     }
 
-    public function insert_order_item($item_id,$order_no,$p_id){
-        $purchase_data = $this->purchase_data($p_id); //532
-        $item_data = $this->item_data($item_id);
-        $item_name =$item_data->item_name;
-        $price = $purchase_data->selling_price;
+    
 
-        //same item click
-        if ($this->order_item_available($item_id,$order_no) > 0) {
-            //update quantity by 1
-            $sql = "UPDATE order_item set qty = qty + 1 WHERE item_id = '$item_id' AND order_no = $order_no";
-            $query = $this->db->query($sql);
-        }
-        else{
-            $data = array(
-                'order_no' => $order_no,
-                'item_id' => $item_id,
-                'item_name' => $item_name,
-                'amount' => $price,
-                'purchase_id' => $p_id
-            );
-            $this->db->insert('order_item', $data);
-        }
-    }
-
-    public function order_item_available($item_id,$order_no){
-        $sql = "SELECT * FROM order_item WHERE order_no = $order_no AND item_id = '$item_id'";
-        $query = $this->db->query($sql);
-        return $query->num_rows();
-    }
+    
 
     public function check_qunatity($item_id){
         $sql = "SELECT * FROM purchase_items WHERE item_id = '$item_id'";
@@ -801,10 +774,7 @@ class Orders_model extends CI_Model
         return $result;
     }
 
-    public function delete_order_item($item_id,$order_no){
-        $sql = "DELETE FROM order_item WHERE order_no = $order_no AND item_id = '$item_id'";
-        $query = $this->db->query($sql);
-    }
+    
 
 }
 /* End of file Oders_model.php and path /application/models/Oders_model.php */
