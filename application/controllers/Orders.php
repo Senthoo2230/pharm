@@ -647,14 +647,14 @@ class Orders extends CI_Controller {
 
         if ($this->input->post('search_text')) {
             $search_text = $this->input->post('search_text');
-            $order_no = $this->Orders_model->last_order_no()+1;
+            $order_id = $this->Orders_model->last_order_id();
             if ($search_text == "") {
                 $items = $this->Orders_model->purchase_items();
                 foreach ($items as $row)
                 {
                     $p_id = $row->id;
                         ?>
-                        <a href="<?php echo base_url(); ?>Orders/insert_order_item/<?php echo $p_id; ?>/<?php echo $order_no; ?>">
+                        <a href="<?php echo base_url(); ?>Orders/insert_order_item/<?php echo $p_id; ?>/<?php echo $order_id; ?>">
                             <div class="col-lg-3 col-md-6 col-sm-12">
                                 <div class="item_box">
                                     <div class="item_m">
@@ -678,7 +678,7 @@ class Orders extends CI_Controller {
                 {
                     $p_id = $row->id;
                         ?>
-                            <a href="<?php echo base_url(); ?>Orders/insert_order_item/<?php echo $p_id; ?>/<?php echo $order_no; ?>">
+                            <a href="<?php echo base_url(); ?>Orders/insert_order_item/<?php echo $p_id; ?>/<?php echo $order_id; ?>">
                                 <div class="col-lg-3 col-md-6 col-sm-12">
                                     <div class="item_box">
                                         <div class="item_m">

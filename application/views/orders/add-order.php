@@ -3,21 +3,24 @@
   .add_items{
     width:100%;
     height:380px;
-    background-color: #CFFFDC;
+    background-color: #f7f7f7;
     padding:10px;
   }
   .btn_item{
     width:100%;
   }
   .item_box{
+    
     margin-top:20px;
     padding:20px 10px;
-    background-color: #CFFFDC;
+    background-color: #f7f7f7;
     height:150px;
     border-radius: 18px;
-    -webkit-box-shadow: 0 10px 6px -6px #777;
-     -moz-box-shadow: 0 10px 6px -6px #777;
-          box-shadow: 0 10px 6px -6px #777;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    transition: transform .2s; /* Animation */
+  }
+  .item_box:hover{
+    transform: scale(1.1);
   }
   .item_m{
     padding:5px 0px;
