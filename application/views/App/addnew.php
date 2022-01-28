@@ -16,6 +16,13 @@
                         <div class="form-horizontal style-form">
 
                         <div class="form-group">
+                            <label class="col-sm-3 control-label">Invoice No</label>
+                            <div class="col-sm-8">
+                            <input type="text" value="<?php echo $invoice_no; ?>" class="form-control" name="invoice_no" id="invoice_no" disabled>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-3 control-label">NIC No<span style="color: red;"> *</span></label>
                             <div class="col-sm-8">
                             <input type="text" value="<?php echo set_value('nic'); ?>" class="form-control" name="nic" id="nic">
@@ -40,11 +47,23 @@
                         </div>
 
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">Counsiling Area<span style="color: red;"> *</span></label>
+                            <label class="col-sm-3 control-label">Address</label>
+                            <div class="col-sm-8">
+                            <input type="text" value="<?php echo set_value('address'); ?>" class="form-control" name="address" id="address">
+                            <span class="text-danger"><?php echo form_error('address'); ?></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">Specialization<span style="color: red;"> *</span></label>
                           <div class="col-sm-8">
                               <select id="area" class="form-control" name="area">
-                                <option value="">Select Area</option>
-                                <option value="ENT">ENT</option>
+                                <option value="">Select Specialization</option>
+                                <?php
+                                foreach ($specials as $spl) {
+                                  echo "<option value='$spl->id'>$spl->specialization</option>";
+                                }
+                                ?>
                               </select>
                               <span class="text-danger"><?php echo form_error('area'); ?></span>
                           </div>
@@ -60,7 +79,6 @@
                           <div class="col-sm-8">
                               <select id="doctor" class="form-control" name="doctor">
                                 <option value="">Select Doctor</option>
-                                <option value="Dr.Jhon">Dr.Jhon</option>
                               </select>
                               <span class="text-danger"><?php echo form_error('doctor'); ?></span>
                           </div>
@@ -71,6 +89,29 @@
                           </div>
                         </div>
 
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Doctor's Charge</label>
+                            <div class="col-sm-8">
+                            <input type="text" value="<?php echo set_value('dcharge'); ?>" class="form-control" name="dcharge" id="dcharge">
+                            <span class="text-danger"><?php echo form_error('dcharge'); ?></span>
+                            </div>
+                        </div>
+
+                        <?php
+                          $month = date('m');
+                          $day = date('d');
+                          $year = date('Y');
+                          
+                          $today = $year . '-' . $month . '-' . $day;
+                        ?>
+
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">Date<span style="color: red;"> *</span></label>
+                          <div class="col-sm-8">
+                              <input class="form-control" type="date" value="<?php echo $today; ?>" name="app_date">
+                              <span class="text-danger"><?php echo form_error('tym'); ?></span>
+                          </div>
+                        </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">Time<span style="color: red;"> *</span></label>
                           <div class="col-sm-8">
@@ -86,10 +127,30 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="col-sm-3 control-label">Comments<span style="color: red;"> *</span></label>
+                            <label class="col-sm-3 control-label">Comments</label>
                             <div class="col-sm-8">
                             <input type="text" value="<?php echo set_value('comment'); ?>" class="form-control" name="comment" id="comment">
                             <span class="text-danger"><?php echo form_error('comment'); ?></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Other Charges</label>
+                            <div class="col-sm-4">
+                              <input type="text" class="form-control" name="other" id="other">
+                              <span class="text-danger" id="other_error"></span>
+                            </div>
+                            <div class="col-sm-4">
+                              <input type="text" class="form-control" name="amount" id="amount">
+                            </div>
+                            <div class="col-sm-1">
+                              <a class="btn btn-success" id="add_other">Add</a>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12" id="other_tbl">
+                                  
                             </div>
                         </div>
 

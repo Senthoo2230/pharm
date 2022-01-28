@@ -28,6 +28,12 @@ class Appoint extends CI_Controller {
 
         $data['pending_count'] = $this->Dashboard_model->pending_count();
         $data['confirm_count'] = $this->Dashboard_model->confirm_count();
+
+        //Show Spelizations
+        $data['specials'] = $this->Appoint_model->specials(); //28
+
+        //Invoice No
+        $data['invoice_no'] = $this->Appoint_model->invoice_no(); //
         
         $data['nav'] = "Appointment";
         $data['subnav'] = "New Appoinment";
@@ -83,6 +89,60 @@ class Appoint extends CI_Controller {
         //$this->load->view('aside',$data);
         $this->load->view('App/appoints',$data);
         $this->load->view('App/footer');
+    }
+
+    public function doctors(){
+        $area = $this->input->post('area');
+        $doctors = $this->Appoint_model->doctors($area); //36
+
+        echo "<option value=''>Select Doctor</option>";
+        foreach ($doctors as $doctor) {
+            echo "<option value='$doctor->id'>$doctor->name</option>";
+        }
+    }
+
+    public function doctors_charge(){
+        $doctor = $this->input->post('doctor');
+        $charge = $this->Appoint_model->doctors_charge($doctor); //44
+        echo $charge;
+    }
+
+    public function Add_other(){
+        $other = $this->input->post('other');
+        $amount = $this->input->post('amount');
+        $invoice_no = $this->input->post('invoice_no');
+
+        $this->Appoint_model->insert_other($other,$amount,$invoice_no);
+
+        $o_charges = $this->Appoint_model->other_charges($invoice_no);
+
+        ?>
+        <table class="table table-striped">
+            <thead>
+                <th>Description</th>
+                <th class="text-right">Amount</th>
+                <th class="text-center">Action</th>
+            </thead>
+            <tbody>
+                <?php
+                $i = 1;
+                    foreach ($o_charges as $o_char) {
+                ?>
+                    <tr id="row<?php echo $o_char->id; ?>">
+                        <td><?php echo $o_char->description; ?></td>
+                        <td class="text-right"><?php echo $o_char->charge; ?>.00</td>
+                        <td class="text-center">
+                            <a class="btn btn-danger delete_service" id="<?php echo $o_char->id; ?>"><i class="fa fa-trash"></i></a>
+                        </td>
+                    </tr>
+                <?php
+                $i++;
+                }
+                ?>
+            </tbody>
+        </table>
+        <?php
+
     }
 
 }

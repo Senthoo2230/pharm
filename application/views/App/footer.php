@@ -51,20 +51,7 @@
 
 <script type="text/javascript">
   $(document).ready(function(){
-      $("#search_item").on("keyup", function(){
-        var search_text = $(this).val();
-          $.ajax({
-            url:"<?php echo base_url(); ?>Orders/item_search", //756
-            type:"POST",
-            cache:false,
-            data:{search_text:search_text},
-            success:function(data){
-              //alert(data);
-              $("#items").html(data);
-              $("#items").fadeIn();
-            }
-          });
-      });
+      
 
       // click one particular city name it's fill in textbox
       $(document).on("click","#vehicle_no_list li", function(){
@@ -101,68 +88,59 @@
 </script>
 
 <script type="text/javascript">
+// Load doctors  and brand for special
     $(document).ready(function(){
-      // Full Service Module
-      $( "#method" ).change(function() {
-        if ($(this).val() == 'cheque') {
-          $("#check_date").show();
-        }
-        else{
-          $("#check_date").hide();
-        }
-      });
-    });
-
-    $(document).ready(function(){
-      setTimeout(function() {
-        $("#delete_msg").hide('blind', {}, 500)
-      }, 3000);
-      $(function() {
-          $('#search_item').focus();
-      });
-    });
-
-</script>
-
-<script type="text/javascript">
-// Load sub cat  and brand for Catogery
-    $(document).ready(function(){
-      $("#ex_catogery").change(function(){
-        var catogery = $(this).val();
+      $("#area").change(function(){
+        var area = $(this).val();
         $.ajax({
-          url:"<?php echo base_url(); ?>Inventory/show_sub_cat",
+          url:"<?php echo base_url(); ?>Appoint/doctors",
           type:"POST",
           cache:false,
-          data:{catogery:catogery},
+          data:{area:area},
           success:function(data){
             //alert(data);
-            $("#ex_sub_catogery").html(data);
+            $("#doctor").html(data);
           }
         });
-      }); 
+      });
+
+      $("#doctor").change(function(){
+        var doctor = $(this).val();
+        $.ajax({
+          url:"<?php echo base_url(); ?>Appoint/doctors_charge",
+          type:"POST",
+          cache:false,
+          data:{doctor:doctor},
+          success:function(data){
+            //alert(data);
+            $("#dcharge").val(data);
+          }
+        });
+      });  
     });
 
     // Price for Service
     $(document).ready(function(){
-      $("#add_service").click(function(){
-        var service = $("#service").val();
-        var bill_no = $("#bill_no").val();
+      $("#add_other").click(function(){
+        var other = $("#other").val();
+        var amount = $("#amount").val();
+        var invoice_no = $("#invoice_no").val();
 
-        if (service == "") {
-          $("#service_error").html("Please Select a Service");
+        if (other == "" || amount == "") {
+          $("#other_error").html("Please fill both");
         }
         else{
-          $("#service_error").html("");
+          $("#other_error").html("");
           $.ajax({
-            url:"<?php echo base_url(); ?>Orders/Add_Service", //495
+            url:"<?php echo base_url(); ?>Appoint/Add_Other",
             type:"POST",
             cache:false,
-            data:{service:service,bill_no:bill_no},
+            data:{other:other,amount:amount,invoice_no:invoice_no},
             success:function(data){
               //alert(data);
-              $("#service_tbl").html(data);
-              $('#service').val("");
-              $('#submit_btn').show();
+              $("#other_tbl").html(data);
+              $('#other').val("");
+              $('#amount').val("");
             }
           });
         }
