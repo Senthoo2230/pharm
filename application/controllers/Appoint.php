@@ -51,20 +51,27 @@ class Appoint extends CI_Controller {
         $this->form_validation->set_rules('mobile', 'Mobile Number', 'required');
         $this->form_validation->set_rules('area', 'Area', 'required');
         $this->form_validation->set_rules('doctor', 'Doctor', 'required');
+        $this->form_validation->set_rules('dcharge', 'Doctor Charge', 'required');
+        $this->form_validation->set_rules('app_date', 'Date', 'required');
+        $this->form_validation->set_rules('tym', 'Time', 'required');
 
         if ($this->form_validation->run() == FALSE) {
             $this->addnew();
         }
         else{
+            $id = $this->input->post('invoice_no');
             $nic = $this->input->post('nic');
             $pname = $this->input->post('pname');
             $mobile = $this->input->post('mobile');
+            $address = $this->input->post('address');
             $area = $this->input->post('area');
             $doctor = $this->input->post('doctor');
+            $dcharge = $this->input->post('dcharge');
+            $app_date = $this->input->post('app_date');
             $tym = $this->input->post('tym');
             $comment = $this->input->post('comment');
 
-            $this->Appoint_model->insert_appoint($nic,$pname,$mobile,$area,$doctor,$tym,$comment);
+            $this->Appoint_model->insert_appoint($id,$nic,$pname,$mobile,$address,$area,$doctor,$dcharge,$app_date,$tym,$comment);
 
             redirect('Appoint/appointments');
         }

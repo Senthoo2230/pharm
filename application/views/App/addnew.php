@@ -109,7 +109,7 @@
                           <label class="col-sm-3 control-label">Date<span style="color: red;"> *</span></label>
                           <div class="col-sm-8">
                               <input class="form-control" type="date" value="<?php echo $today; ?>" name="app_date">
-                              <span class="text-danger"><?php echo form_error('tym'); ?></span>
+                              <span class="text-danger"><?php echo form_error('app_date'); ?></span>
                           </div>
                         </div>
                         <div class="form-group">

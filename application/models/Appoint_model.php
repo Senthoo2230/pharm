@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         
 class Appoint_model extends CI_Model 
 {
-    public function insert_appoint($nic,$pname,$mobile,$area,$doctor,$tym,$comment){
+    public function insert_appoint($id,$nic,$pname,$mobile,$address,$area,$doctor,$dcharge,$app_date,$tym,$comment){
         $data = array(
             'nic' => $nic,
             'name' => $pname,
@@ -12,6 +12,10 @@ class Appoint_model extends CI_Model
             'doctor' => $doctor,
             'time' => $tym,
             'comment' => $comment,
+            'id' => $id,
+            'address' => $address,
+            'doc_charge' => $dcharge,
+            'app_date' => $app_date
         );
     
         $this->db->insert('appoint', $data);

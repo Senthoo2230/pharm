@@ -51,8 +51,6 @@
 
 <script type="text/javascript">
   $(document).ready(function(){
-      
-
       // click one particular city name it's fill in textbox
       $(document).on("click","#vehicle_no_list li", function(){
 
@@ -172,27 +170,6 @@
           });*/
       }); 
     });
-
-    $(document).ready(function(){
-        var bill_no = $("#bill_no").val();
-          $.ajax({
-            url:"<?php echo base_url(); ?>Orders/Add_item", //495
-            type:"POST",
-            cache:false,
-            data:{bill_no:bill_no},
-            success:function(data){
-              //alert(data);
-              $("#item_tbl").html(data);
-              $('#items').val("");
-              if (data != "") {
-                  ('submit_btn').show();
-              }
-            }
-          });
-        
-    }); 
-
-    
   </script>
 </body>
 
