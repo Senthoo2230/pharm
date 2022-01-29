@@ -43,12 +43,22 @@
                         <td><?php echo $app->nic; ?></td>
                         <td><?php echo $app->name; ?></td>
                         <td><?php echo $app->mobile; ?></td>
-                        <td><?php echo $app->area; ?></td>
-                        <td><?php echo $app->doctor; ?></td>
+                        <td>
+                          <?php 
+                          $area = $app->area; 
+                          echo $this->Appoint_model->area_name($area);
+                          ?>
+                        </td>
+                        <td>
+                          <?php 
+                          $id = $app->doctor; 
+                          echo $this->Appoint_model->doctor_name($id);
+                          ?>
+                        </td>
                         <td><?php echo $app->time; ?></td>
                         
                         <td class="text-center">
-                          <a href="" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></a>
+                          <a href="<?php echo base_url(); ?>Appoint/view/<?php echo $app->id; ?>" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></a>
                           <a href="" class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></a>
                         </td>
                       </tr>

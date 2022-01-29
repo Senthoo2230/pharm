@@ -189,6 +189,36 @@ class Appoint extends CI_Controller {
         echo $this->Appoint_model->patient_address($nic);
     }
 
+    public function view(){
+        $data['page_title'] = 'View Appoinment';
+        $data['username'] = $this->Dashboard_model->username();
+        // Customer List
+        $data['pendings'] = $this->Booking_model->pending();
+
+        $data['pending_count'] = $this->Dashboard_model->pending_count();
+        $data['confirm_count'] = $this->Dashboard_model->confirm_count();
+
+        //Show Spelizations
+        $data['specials'] = $this->Appoint_model->specials(); //28
+
+        //Invoice No
+        $data['invoice_no'] = $this->Appoint_model->invoice_no(); //
+        
+        $data['nav'] = "Appointment";
+        $data['subnav'] = "Appointment";
+
+        if ($this->uri->segment('3')) {
+            $id =  $this->uri->segment('3');
+            $data['apps'] = $this->Appoint_model->view($id);
+        }
+
+        $this->load->view('dashboard/layout/header',$data);
+        $this->load->view('dashboard/layout/aside',$data);
+        //$this->load->view('aside',$data);
+        $this->load->view('App/view',$data);
+        $this->load->view('App/footer');
+    }
+
 }
 
 /* End of file Employees.php and path /application/controllers/Employees.php */

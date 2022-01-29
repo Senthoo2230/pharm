@@ -52,6 +52,11 @@
 <script type="text/javascript">
   $(document).ready(function(){
       $("#nic").on("keyup", function(){
+
+        $("#pname").val("");
+        $("#mobile").val("");
+        $("#address").val("");
+
         var nic = $(this).val();
         if (nic !== "") {
           $.ajax({

@@ -140,4 +140,25 @@ class Appoint_model extends CI_Model
         $row = $query->first_row();
         return $row->address;
     }
+
+    public function doctor_name($id){
+        $sql = "SELECT name FROM doctor WHERE id = $id";
+        $query = $this->db->query($sql);
+        $row = $query->first_row();
+        return $row->name;
+    }
+
+    public function area_name($area){
+        $sql = "SELECT specialization FROM specialization WHERE id = $area";
+        $query = $this->db->query($sql);
+        $row = $query->first_row();
+        return $row->specialization;
+    }
+
+    public function view($id){
+        $sql = "SELECT * FROM appoint WHERE id = $id";
+        $query = $this->db->query($sql);
+        $row = $query->first_row();
+        return $row;
+    }
 }
