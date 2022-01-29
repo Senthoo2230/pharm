@@ -51,6 +51,73 @@
 
 <script type="text/javascript">
   $(document).ready(function(){
+      $("#nic").on("keyup", function(){
+        var nic = $(this).val();
+        if (nic !== "") {
+          $.ajax({
+            url:"<?php echo base_url(); ?>Appoint/nic_search",
+            type:"POST",
+            cache:false,
+            data:{nic:nic},
+            success:function(data){
+              //alert(data);
+              $("#nic_list").html(data);
+              $("#nic_list").fadeIn();
+            }
+          });
+        }else{
+          $("#nic_list").html("");
+          $("#nic_list").fadeOut();
+        }
+      });
+
+      // click one particular city name it's fill in textbox
+      $(document).on("click","#nic_list li", function(){
+
+        $('#nic').val($(this).text());
+        $('#nic_list').fadeOut("fast");
+        var nic = $('#nic').val();
+
+        //$('#c_no').fadeOut("fast");
+
+         $.ajax({
+          url:"<?php echo base_url(); ?>Appoint/patient_name",
+          type:"POST",
+          cache:false,
+          data:{nic:nic},
+          success:function(data){
+            $("#pname").val(data);
+            //alert(data);
+          }
+        });
+
+        $.ajax({
+          url:"<?php echo base_url(); ?>Appoint/patient_mobile",
+          type:"POST",
+          cache:false,
+          data:{nic:nic},
+          success:function(data){
+            $("#mobile").val(data);
+            //alert(data);
+          }
+        });
+
+        $.ajax({
+          url:"<?php echo base_url(); ?>Appoint/patient_address",
+          type:"POST",
+          cache:false,
+          data:{nic:nic},
+          success:function(data){
+            $("#address").val(data);
+            //alert(data);
+          }
+        });
+      });
+  });
+</script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
       // click one particular city name it's fill in textbox
       $(document).on("click","#vehicle_no_list li", function(){
 

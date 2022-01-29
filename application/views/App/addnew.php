@@ -1,4 +1,15 @@
-
+<style type="text/css">
+  .li-style{
+    border-bottom: medium;
+    background-color:#f4f9f9;
+    padding: 8px;
+    color: #314e52;
+  }
+  .li-style:hover{
+    background-color:#e7e6e1;
+    color: #f2a154;
+  }
+</style>
 <section id="main-content">
     <section class="wrapper">
         <div class="row mt">
@@ -26,6 +37,7 @@
                             <label class="col-sm-3 control-label">NIC No<span style="color: red;"> *</span></label>
                             <div class="col-sm-8">
                             <input type="text" value="<?php echo set_value('nic'); ?>" class="form-control" name="nic" id="nic">
+                            <div id="nic_list"></div>
                             <span class="text-danger"><?php echo form_error('nic'); ?></span>
                             </div>
                         </div>

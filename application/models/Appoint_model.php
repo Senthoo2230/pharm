@@ -83,4 +83,61 @@ class Appoint_model extends CI_Model
 
         return $result;
     }
+
+    public function nic_list($nic){
+        $sql = "SELECT * FROM patient WHERE nic LIKE '%$nic%'";
+        $query = $this->db->query($sql);
+        $result = $query->result();
+
+        return $result;
+    }
+
+    public function patient_available($nic){
+        $sql = "SELECT nic FROM patient WHERE nic = '$nic'";
+        $query = $this->db->query($sql);
+        return $conut = $query->num_rows();
+    }
+
+    public function insert_patient($nic,$pname,$mobile,$address){
+        $data = array(
+            'name' => $pname,
+            'nic' => $nic,
+            'mobile' => $mobile,
+            'address' => $address
+        );
+    
+        $this->db->insert('patient', $data);
+    }
+
+    public function update_patient($nic,$pname,$mobile,$address){
+        $data = array(
+            'name' => $pname,
+            'mobile' => $mobile,
+            'address' => $address
+        );
+        
+        $this->db->where('nic', $nic);
+        $this->db->update('patient', $data);
+    }
+
+    public function patient_name($nic){
+        $sql = "SELECT name FROM patient WHERE nic = '$nic'";
+        $query = $this->db->query($sql);
+        $row = $query->first_row();
+        return $row->name;
+    }
+
+    public function patient_mobile($nic){
+        $sql = "SELECT mobile FROM patient WHERE nic = '$nic'";
+        $query = $this->db->query($sql);
+        $row = $query->first_row();
+        return $row->mobile;
+    }
+
+    public function patient_address($nic){
+        $sql = "SELECT address FROM patient WHERE nic = '$nic'";
+        $query = $this->db->query($sql);
+        $row = $query->first_row();
+        return $row->address;
+    }
 }

@@ -72,7 +72,13 @@ class Appoint extends CI_Controller {
             $comment = $this->input->post('comment');
 
             $this->Appoint_model->insert_appoint($id,$nic,$pname,$mobile,$address,$area,$doctor,$dcharge,$app_date,$tym,$comment);
-
+            
+            if ($this->Appoint_model->patient_available($nic) > 0) {
+                $this->Appoint_model->update_patient($nic,$pname,$mobile,$address);
+            }
+            else{
+                $this->Appoint_model->insert_patient($nic,$pname,$mobile,$address);
+            }
             redirect('Appoint/appointments');
         }
     }
@@ -150,6 +156,37 @@ class Appoint extends CI_Controller {
         </table>
         <?php
 
+    }
+
+    public function nic_search(){
+        if ($this->input->post('nic')) {
+            
+            $output = "";
+            $nic = $this->input->post('nic');
+            $result = $this->Appoint_model->nic_list($nic);
+            $output = '<ul class="list-unstyled">';	
+            foreach ($result as $row)
+            {
+                    $output .= '<li class="li-style">'.$row->nic.'</li>';
+            }
+            $output .= '</ul>';
+            echo $output;
+        }
+    }
+
+    public function patient_name(){
+        $nic = $this->input->post('nic');
+        echo $this->Appoint_model->patient_name($nic);
+    }
+
+    public function patient_mobile(){
+        $nic = $this->input->post('nic');
+        echo $this->Appoint_model->patient_mobile($nic);
+    }
+
+    public function patient_address(){
+        $nic = $this->input->post('nic');
+        echo $this->Appoint_model->patient_address($nic);
     }
 
 }
