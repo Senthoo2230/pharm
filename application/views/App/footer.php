@@ -219,7 +219,19 @@
     });
 
     $(document).ready(function(){
-        
+          var invoice_no = $("#invoice_no").val();
+          $.ajax({
+            url:"<?php echo base_url(); ?>Appoint/view_other",
+            type:"POST",
+            cache:false,
+            data:{invoice_no:invoice_no},
+            success:function(data){
+              //alert(data);
+              $("#other_tbl").html(data);
+              $('#other').val("");
+              $('#amount').val("");
+            }
+          });
     }); 
 
     // Price for Service

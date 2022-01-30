@@ -158,6 +158,39 @@ class Appoint extends CI_Controller {
 
     }
 
+    public function view_other(){
+        $invoice_no = $this->input->post('invoice_no');
+        $o_charges = $this->Appoint_model->other_charges($invoice_no);
+
+        ?>
+        <table class="table table-striped">
+            <thead>
+                <th>Description</th>
+                <th class="text-right">Amount</th>
+                <th class="text-center">Action</th>
+            </thead>
+            <tbody>
+                <?php
+                $i = 1;
+                    foreach ($o_charges as $o_char) {
+                ?>
+                    <tr id="row<?php echo $o_char->id; ?>">
+                        <td><?php echo $o_char->description; ?></td>
+                        <td class="text-right"><?php echo $o_char->charge; ?>.00</td>
+                        <td class="text-center">
+                            <a class="btn btn-danger delete_service" id="<?php echo $o_char->id; ?>"><i class="fa fa-trash"></i></a>
+                        </td>
+                    </tr>
+                <?php
+                $i++;
+                }
+                ?>
+            </tbody>
+        </table>
+        <?php
+
+    }
+
     public function nic_search(){
         if ($this->input->post('nic')) {
             
@@ -217,6 +250,45 @@ class Appoint extends CI_Controller {
         //$this->load->view('aside',$data);
         $this->load->view('App/view',$data);
         $this->load->view('App/footer');
+    }
+
+    public function update(){
+        $this->form_validation->set_rules('nic', 'NIC Number', 'required');
+        $this->form_validation->set_rules('pname', 'Patient Name', 'required');
+        $this->form_validation->set_rules('mobile', 'Mobile Number', 'required');
+        $this->form_validation->set_rules('area', 'Area', 'required');
+        $this->form_validation->set_rules('doctor', 'Doctor', 'required');
+        $this->form_validation->set_rules('dcharge', 'Doctor Charge', 'required');
+        $this->form_validation->set_rules('app_date', 'Date', 'required');
+        $this->form_validation->set_rules('tym', 'Time', 'required');
+
+
+        if ($this->form_validation->run() == FALSE) {
+            
+        }
+        else{
+            $id = $this->input->post('invoice_no');
+            $nic = $this->input->post('nic');
+            $pname = $this->input->post('pname');
+            $mobile = $this->input->post('mobile');
+            $address = $this->input->post('address');
+            $area = $this->input->post('area');
+            $doctor = $this->input->post('doctor');
+            $dcharge = $this->input->post('dcharge');
+            $app_date = $this->input->post('app_date');
+            $tym = $this->input->post('tym');
+            $comment = $this->input->post('comment');
+
+            $this->Appoint_model->update_appoint($id,$nic,$pname,$mobile,$address,$area,$doctor,$dcharge,$app_date,$tym,$comment);
+            
+            if ($this->Appoint_model->patient_available($nic) > 0) {
+                $this->Appoint_model->update_patient($nic,$pname,$mobile,$address);
+            }
+            else{
+                $this->Appoint_model->insert_patient($nic,$pname,$mobile,$address);
+            }
+            redirect('Appoint/appointments');
+        }
     }
 
 }

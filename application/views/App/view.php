@@ -2,7 +2,7 @@
     <section class="wrapper">
         <div class="row mt">
             <div class="col-lg-8">
-                <?php echo form_open(''); ?>
+                <?php echo form_open('Appoint/update'); ?>
                     <div class="form-panel" style="padding:25px">
                       <div id="delete_msg">
                         <?php
@@ -17,7 +17,7 @@
                         <div class="form-group">
                             <label class="col-sm-3 control-label">Invoice No</label>
                             <div class="col-sm-8">
-                            <input type="text" value="<?php echo $apps->id; ?>" class="form-control" name="invoice_no" id="invoice_no" disabled>
+                            <input type="text" value="<?php echo $apps->id; ?>" class="form-control" name="invoice_no" id="invoice_no">
                             </div>
                         </div>
 
@@ -60,15 +60,45 @@
 
                         <div class="form-group">
                           <label class="col-sm-3 control-label">Specialization<span style="color: red;"> *</span></label>
-                          <div class="col-sm-8">
-                            <input type="text" value="<?php echo $this->Appoint_model->area_name($apps->area); ?>" class="form-control" name="area" id="area">
-                          </div>
+                            <div class="col-sm-8">
+                                <select id="area" class="form-control" name="area">
+                                    <option value="">Select Specialization</option>
+                                    <?php
+                                    $slt = "";
+                                    foreach ($specials as $spl) {
+                                        if ($spl->id == $apps->area) {
+                                            $slt = "selected";
+                                        }
+                                        else{
+                                            $slt = "";
+                                        }
+                                        echo "<option $slt value='$spl->id'>$spl->specialization</option>";
+                                    }
+                                    ?>
+                                </select>
+                                <span class="text-danger"><?php echo form_error('area'); ?></span>
+                            </div>
                         </div>
 
                         <div class="form-group">
                           <label class="col-sm-3 control-label">Doctor<span style="color: red;"> *</span></label>
                           <div class="col-sm-8">
-                            <input type="text" value="<?php echo $this->Appoint_model->doctor_name($apps->doctor); ?>" class="form-control" name="doctor" id="doctor">
+                                <select class="form-control" name="doctor" id="doctor">
+                                    <option value="">Select Doctor</option>
+                                    <?php
+                                    $doctors = $this->Appoint_model->doctor_for_area($apps->area);
+                                    $slt = "";
+                                    foreach ($doctors as $doc) {
+                                        if ($apps->doctor == $doc->id) {
+                                            $slt = "selected";
+                                        }
+                                        else{
+                                            $slt = "";
+                                        }
+                                        echo "<option $slt value='$doc->id'>$doc->name</option>";
+                                    }
+                                    ?>
+                                </select>
                           </div>
                         </div>
 
@@ -117,39 +147,31 @@
                                 <?php
                                     $o_charges = $this->Appoint_model->other_charges($apps->id);
                                 ?>
-                            <table class="table table-striped">
-                                <thead>
-                                    <th>Description</th>
-                                    <th class="text-right">Amount</th>
-                                    <th class="text-center">Action</th>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    $i = 1;
-                                        foreach ($o_charges as $o_char) {
-                                    ?>
-                                        <tr id="row<?php echo $o_char->id; ?>">
-                                            <td><?php echo $o_char->description; ?></td>
-                                            <td class="text-right"><?php echo $o_char->charge; ?>.00</td>
-                                            <td class="text-center">
-                                                <a class="btn btn-danger delete_service" id="<?php echo $o_char->id; ?>"><i class="fa fa-trash"></i></a>
-                                            </td>
-                                        </tr>
-                                    <?php
-                                    $i++;
-                                    }
-                                    ?>
-                                </tbody>
-                            </table>
+                                <div id="other_tbl">
+                                    
+                                </div>
+                            </div>
+
+                            <div class="col-sm-3"></div>
+
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" name="other" id="other" placeholder="Description">
+                                <span class="text-danger" id="other_error"></span>
+                                </div>
+                                <div class="col-sm-3">
+                                <input type="text" class="form-control" name="amount" id="amount" placeholder="Amount">
+                                </div>
+                                <div class="col-sm-2">
+                                <a class="btn btn-success" id="add_other">Add</a>
                             </div>
                         </div>
 
 
                         <div class="form-group">
-                          <div class="col-sm-3"></div>
-                          <div class="col-sm-8">
-                            <a href="" class="btn btn-primary pull-right mr-3">Edit</a>
-                            <a style="margin-right: 15px;" href="" class="pull-right btn btn-danger">Back</a>
+                          <div class="col-sm-12">
+                              <input type="submit" class="btn btn-primary pull-right mr-3" value="Update">
+                            <a href="" class="btn btn-success pull-right mr-3" style="margin-right:6px;">Print</a>
+                            <a style="margin-right: 15px;" href="" class="pull-left btn btn-danger">Back</a>
                           </div>
                         </div>
 

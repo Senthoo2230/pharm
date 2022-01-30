@@ -161,4 +161,30 @@ class Appoint_model extends CI_Model
         $row = $query->first_row();
         return $row;
     }
+
+    public function doctor_for_area($area){
+        $sql = "SELECT * FROM doctor WHERE specialization = $area";
+        $query = $this->db->query($sql);
+        $result = $query->result();
+
+        return $result;
+    }
+
+    public function update_appoint($id,$nic,$pname,$mobile,$address,$area,$doctor,$dcharge,$app_date,$tym,$comment){
+        $data = array(
+            'nic' => $nic,
+            'name' => $pname,
+            'mobile' => $mobile,
+            'area' => $area,
+            'doctor' => $doctor,
+            'time' => $tym,
+            'comment' => $comment,
+            'address' => $address,
+            'doc_charge' => $dcharge,
+            'app_date' => $app_date
+        );
+    
+        $this->db->where('id', $id);
+        $this->db->update('appoint', $data);
+    }
 }
